@@ -65,3 +65,39 @@ The entire setup is verified using the command: **sudo vgdisplay -v #view comple
 
 ![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/445ef2f8-72eb-4198-b89a-b6f7208f13df)
 
+`/var/www/html`directory was created to store websites files: **`sudo mkdir -p /var/www/html`**
+
+`/home/recovery/logs` directory was created to store backup of log data: **`sudo mkdir -p /home/recovery/logs`**
+ 
+`/var/www/html`directory was mounted on apps-lv logical volume: **`sudo mount /dev/webdata-vg/apps-lv /var/www/html/`**
+
+`rsync` utility was used to backup all the files in the directory /var/log into /home/recovery/logs (this is require before mounting the file system)
+
+**`sudo rsync -av /var/log/. /home/recovery/logs/`**
+
+Mount /var/log on logs-v (NB: all the existing data on /var/log will be deleted. Hence the above step is very important): 
+
+**`sudo mount /dev/webdata-vg/logs-lv /var/log`**
+
+Files were restored back into /var/log directory: **`sudo rsync -av /home/recovery/logs/log/. /var/log`**
+
+The `/etc/fstab` file was updated so that the mount configuration will persist after restart of the server. The UUID of teh device will be used to update the `/etc/fstab` file.
+
+**`sudo blkid`**
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/9b6cb243-dd12-4865-b473-cb669cb535bc)
+
+**`sudo nano /etc/fstab`** to edit the fstabl file
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/9d0ecb5f-93f3-458e-aac7-81841066bfd8)
+
+**`sudo mount -a`** was use to test the configuration
+**`sudo systemctl daemon-reload`** command was use to reload. 
+**`df -h`** command was use to verify the setup
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/6f01d20b-418a-42de-8b05-f2e00f32f58a)
+
+### Preparing the database server
+
+A second EC2 instance was launched that will serve as the database server. The same steps above for the web server was repeated. instead of apps-lv, db-lv was created and mount it to /db directory instead of /var/www/html/
+
