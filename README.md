@@ -146,7 +146,9 @@ cp -R wordpress /var/www/html/
 SELinux Policies was configured (changing file permission):
 
 `sudo chown -R apache:apache /var/www/html/wordpress`
+
 `sudo chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R`
+
 `sudo setsebool -P httpd_can_network_connect=1`
 
 
