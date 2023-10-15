@@ -127,7 +127,8 @@ sudo yum install php php-opcache php-gd php-curl php-mysqlnd
 sudo systemctl start php-fpm
 sudo systemctl enable php-fpm
 setsebool -P httpd_execmem 1
-``
+```
+
 Apache was restarted: **`sudo systemctl restart httpd`**
 
 wordpress was downloaded and copy wordpress to `var/www/html`
@@ -143,6 +144,7 @@ cp -R wordpress /var/www/html/
 ```
 
 SELinux Policies was configured (changing file permission):
+
 ```
  sudo chown -R apache:apache /var/www/html/wordpress
  sudo chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
@@ -157,21 +159,17 @@ SELinux Policies was configured (changing file permission):
 ![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/f6390364-6886-4c2f-88b6-42d718e0778b)
 
 ## Configure the Database to work with the Wordpress
+
 ```
 sudo mysql
-
 CREATE DATABASE wordpress;
-
 CREATE USER `myuser`@`172.31.39.56` IDENTIFIED BY 'mypass';
-
 GRANT ALL ON wordpress.* TO 'myuser'@'172.31.39.56';
-
 FLUSH PRIVILEGES;
-
 SHOW DATABASES;
-
 exit
 ```
+
 ![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/c7a11a50-637c-4081-b189-4b4f9d33e032)
 
 The `/etc/my.cnf.d` file was edited to include the bind address of the webserver. **`sudo nano /etc/my.cnf`**
