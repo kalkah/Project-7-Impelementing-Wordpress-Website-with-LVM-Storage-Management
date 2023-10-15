@@ -101,3 +101,104 @@ The `/etc/fstab` file was updated so that the mount configuration will persist a
 
 A second EC2 instance was launched that will serve as the database server. The same steps above for the web server was repeated. instead of apps-lv, db-lv was created and mount it to /db directory instead of /var/www/html/
 
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/fc932a94-57e3-4da0-b56d-d6ea671a24b1)
+
+## Installing Wordpress and Configuring to use MYSQL Database
+
+The repository was updated: **`sudo yum update -y`**
+
+wget, Apache and its dependencies was installedu: **`sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json`**
+
+The Apache was started: **`sudo systemctl enable httpd`**   **`sudo systemctl start httpd`**
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/34080ea9-07e0-40b6-a67e-e264061941f1)
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/c010a605-496e-4e85-b76f-e2c6b2da91e5)
+
+PHP and its dependecied was installed:
+
+```
+sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+sudo yum module list php
+sudo yum module reset php
+sudo yum module enable php:remi-7.4
+sudo yum install php php-opcache php-gd php-curl php-mysqlnd
+sudo systemctl start php-fpm
+sudo systemctl enable php-fpm
+setsebool -P httpd_execmem 1
+``
+Apache was restarted: **`sudo systemctl restart httpd`**
+
+wordpress was downloaded and copy wordpress to `var/www/html`
+
+```
+mkdir wordpress
+cd   wordpress
+sudo wget http://wordpress.org/latest.tar.gz
+sudo tar xzvf latest.tar.gz
+sudo rm -rf latest.tar.gz
+cp wordpress/wp-config-sample.php wordpress/wp-config.php
+cp -R wordpress /var/www/html/
+```
+
+SELinux Policies was configured:
+```
+ sudo chown -R apache:apache /var/www/html/wordpress
+ sudo chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
+ sudo setsebool -P httpd_can_network_connect=1
+```
+
+## Install MYSQL on the DB Server
+**`sudo yum update`**    **`sudo yum install mysql-server`**
+
+**`sudo systemctl status mysqld`** command was used to verify that the service is up and running.
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/f6390364-6886-4c2f-88b6-42d718e0778b)
+
+## Configure the Database to work with the Wordpress
+```
+sudo mysql
+CREATE DATABASE wordpress;
+CREATE USER `myuser`@`172.31.39.56` IDENTIFIED BY 'mypass';
+GRANT ALL ON wordpress.* TO 'myuser'@'172.31.39.56';
+FLUSH PRIVILEGES;
+SHOW DATABASES;
+exit
+```
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/c7a11a50-637c-4081-b189-4b4f9d33e032)
+
+The `/etc/my.cnf.d` file was edited to include the bind address of the webserver. **`sudo nano /etc/my.cnf`**
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/930ec8d0-d4ed-42c3-a892-de24e7032c5c)
+
+Thereafter the service was restarted **`sudo systemctl restart mysqld`**
+
+## Configuring Wordpress to work with remote Database
+
+MYSQL port 3306 was opened on the database server to allow access to the db server only from webserver private IP address:172.31.39.56
+
+TCP port 80 on the webserver was enable in the inbound rules to allow all traffic
+
+MySQL was installed and connection from web server to DB server by using mysql-client was tested
+**`sudo yum install mysql`**
+
+Permission and configuration was change so that Apache could use wordpress:
+
+wordpress configuration file was edited: `sudo nano wp-config.php`
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/279251f1-274d-41ee-9b14-f26be323d8cc)
+
+The default apache page was disable so that word press can be view on the internet:
+
+**`sudo mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf_backup`**
+
+Restart httpd. `sudo systemctl restart httpd`
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/d314aee0-15ea-4135-bb38-cd8a320e4b11)
+
+verification was done through successful execution of  SHOW DATABASES; command and see a list of existing databases
+
+**`sudo mysql -h 172.31.43.19 -u wordpress -p`**
+
+**`SHOW DATABASES`** command was used to show that we can execute successfully
