@@ -107,7 +107,7 @@ A second EC2 instance was launched that will serve as the database server. The s
 
 The repository was updated: **`sudo yum update -y`**
 
-wget, Apache and its dependencies was installedu: **`sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json`**
+Apache and its dependencies was installed: **`sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json`**
 
 The Apache was started: **`sudo systemctl enable httpd`**   **`sudo systemctl start httpd`**
 
@@ -142,7 +142,7 @@ cp wordpress/wp-config-sample.php wordpress/wp-config.php
 cp -R wordpress /var/www/html/
 ```
 
-SELinux Policies was configured:
+SELinux Policies was configured (changing file permission):
 ```
  sudo chown -R apache:apache /var/www/html/wordpress
  sudo chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
