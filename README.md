@@ -159,11 +159,17 @@ SELinux Policies was configured:
 ## Configure the Database to work with the Wordpress
 ```
 sudo mysql
+
 CREATE DATABASE wordpress;
+
 CREATE USER `myuser`@`172.31.39.56` IDENTIFIED BY 'mypass';
+
 GRANT ALL ON wordpress.* TO 'myuser'@'172.31.39.56';
+
 FLUSH PRIVILEGES;
+
 SHOW DATABASES;
+
 exit
 ```
 ![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/c7a11a50-637c-4081-b189-4b4f9d33e032)
@@ -183,11 +189,9 @@ TCP port 80 on the webserver was enable in the inbound rules to allow all traffi
 MySQL was installed and connection from web server to DB server by using mysql-client was tested
 **`sudo yum install mysql`**
 
-Permission and configuration was change so that Apache could use wordpress:
-
 wordpress configuration file was edited: `sudo nano wp-config.php`
 
-![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/279251f1-274d-41ee-9b14-f26be323d8cc)
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/1f4d6c57-c769-402c-9263-e2aacdef34cb)
 
 The default apache page was disable so that word press can be view on the internet:
 
@@ -197,8 +201,18 @@ Restart httpd. `sudo systemctl restart httpd`
 
 ![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/d314aee0-15ea-4135-bb38-cd8a320e4b11)
 
-verification was done through successful execution of  SHOW DATABASES; command and see a list of existing databases
+verification was done through successful execution of  `SHOW DATABASES`; command and see a list of existing databases
 
-**`sudo mysql -h 172.31.43.19 -u wordpress -p`**
+**`sudo mysql -h 172.31.43.19 -u myuser -p`**
 
 **`SHOW DATABASES`** command was used to show that we can execute successfully
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/d517b933-cd6f-420e-a95a-37b5f77f2ef3)
+
+The webserver was accessed using the public IP address of the webserver: `http://16.171.141.48`
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/2940631f-7db8-4b93-a532-8dec18d1301b)
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/2e394b01-b383-44f1-942f-d26ac3c04396)
+
+![image](https://github.com/kalkah/Project-7-Impelementing-Wordpress-Website-with-LVM-Storage-Management/assets/95209274/b4c501d7-f22c-4ef0-89d5-2898ba7d7ed1)
